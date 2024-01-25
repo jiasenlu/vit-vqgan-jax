@@ -1,0 +1,89 @@
+# ImageNet-1K
+# trainset size: 1_281_167
+# bsize of 4096 so 312 is one epoch
+
+data:
+  task_name: "audio_datasets"
+  task: "audio"
+  input_size: [128, 256]
+  patch_size: [8, 8]
+
+model:
+  vocab_size: 8192
+  proj_dim: 32
+  # Transformers
+  encoder_hidden_size: 512
+  encoder_num_layers: 8
+  encoder_mlp_dim: 2048
+  encoder_num_heads: 8
+  decoder_hidden_size: 512
+  decoder_num_layers: 8
+  decoder_mlp_dim: 2048
+  decoder_num_heads: 8
+  dropout_rate: 0.0
+  dropath_rate: 0.0
+  attention_dropout_rate: 0.0
+  default_input_size: [128, 256]
+  output_channel: 1
+  # PE
+  add_position_embedding: False
+
+  # Misc.
+  use_bfloat16: True
+
+loss:
+  # loss
+  codebook_weight: 1.0
+  loggaussian_weight: 1.0
+  loglaplace_weight: 0
+  perceptual_weight: 0.1
+  adversarial_weight: 0.1
+  disc_g_start: 100000 #50k
+  disc_d_start: 100000
+  disc_d_flip_update: 200000
+
+device:
+  use_tpu: True
+  initialize_ckpt: ""
+  output_dir: "gs://jiasen-us-east/audio/audio_audioset_ss_new_final_init"
+  wandb_api: "4e6d1a3bbc9e8bce0ee37bec376733982d76e01b"
+  wandb_project: "vit-vqgan-audio"
+  wandb_entity: "jiasenl"
+  wandb_name: ""
+  batch_size: 512
+  save_every_nsteps: 50000
+  commit_every_nsteps: 100
+
+
+optimizer_g:
+  optim: "adamw"
+  learning_rate: 0.0001
+  end_learning_rate: 0.00005
+  num_train_steps: 1000000 # 500k
+  num_warmup_steps: 20000
+  weight_decay_rate: 0.0001
+  beta_1: 0.9
+  beta_2: 0.99
+  adafactor: False
+  use_bfloat16_optim: False
+  eps: 0.00000001
+  use_bfloat16_weights: False
+  do_bias_correction: True
+  global_max_norm: 1.0
+  end_learning_rate: 0.0
+
+optimizer_d:
+  optim: "adamw"
+  learning_rate: 0.001
+  end_learning_rate: 0.0001
+  num_train_steps: 500000 # 300 epochs
+  num_warmup_steps: 20000
+  weight_decay_rate: 0.0001
+  beta_1: 0.9
+  beta_2: 0.99
+  adafactor: False
+  use_bfloat16_optim: False
+  eps: 0.00000001
+  use_bfloat16_weights: False
+  do_bias_correction: True
+  global_max_norm: 1.0
